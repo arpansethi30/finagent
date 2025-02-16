@@ -33,7 +33,6 @@ export default function SentimentPage() {
     setAnalysis(null);
 
     try {
-      // First check if the backend is available
       const healthCheck = await fetch('http://localhost:8001/health').catch(() => null);
       if (!healthCheck) {
         throw new Error('Backend server is not running. Please start the server and try again.');
@@ -65,7 +64,6 @@ export default function SentimentPage() {
         : 'Failed to analyze sentiment. Please try again.';
       setError(errorMessage);
 
-      // If the error is due to backend not running, show a more helpful message
       if (errorMessage.includes('Failed to fetch')) {
         setError('Unable to connect to the backend server. Please ensure it is running on port 8001.');
       }
@@ -79,78 +77,107 @@ export default function SentimentPage() {
     setAnalysis(null);
   };
 
-  return (
-    <div className="max-w-4xl mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Market Sentiment Analysis</h1>
+  const commonStocks = [
+    { symbol: 'AAPL', name: 'Apple' },
+    { symbol: 'MSFT', name: 'Microsoft' },
+    { symbol: 'GOOGL', name: 'Google' },
+    { symbol: 'AMZN', name: 'Amazon' },
+    { symbol: 'META', name: 'Meta' },
+  ];
 
-      <form onSubmit={handleAnalyze} className="mb-8">
-        <div className="flex gap-4 mb-4">
-          <div className="flex-1">
-            <label htmlFor="symbol" className="block text-sm font-medium text-gray-700 mb-1">
-              Stock Symbol
-            </label>
-            <input
-              type="text"
-              id="symbol"
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. AAPL"
-              required
-              pattern="[A-Za-z]+"
-              title="Please enter a valid stock symbol (letters only)"
-            />
-          </div>
-          <div className="w-48">
-            <label htmlFor="days" className="block text-sm font-medium text-gray-700 mb-1">
-              Time Period (Days)
-            </label>
-            <select
-              id="days"
-              value={days}
-              onChange={(e) => setDays(e.target.value)}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="1">1 Day</option>
-              <option value="3">3 Days</option>
-              <option value="7">1 Week</option>
-              <option value="14">2 Weeks</option>
-              <option value="30">1 Month</option>
-            </select>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300 transition-colors duration-200"
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Analyzing...
+  return (
+    <div className="section-container animate-fadeUp">
+      <h1 className="section-title">Market Sentiment Analysis</h1>
+      <p className="section-description">
+        Analyze market sentiment and news coverage for any publicly traded company
+      </p>
+
+      <div className="card-modern p-8 mb-8">
+        <form onSubmit={handleAnalyze} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <label htmlFor="symbol" className="block text-sm font-medium text-[#0A2540] mb-2">
+                Stock Symbol
+              </label>
+              <input
+                type="text"
+                id="symbol"
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+                className="input-modern"
+                placeholder="Enter stock symbol (e.g., AAPL)"
+                required
+                pattern="[A-Za-z]+"
+                title="Please enter a valid stock symbol (letters only)"
+              />
+              <div className="mt-3">
+                <p className="text-sm font-medium text-[#486284] mb-2">Popular stocks:</p>
+                <div className="flex flex-wrap gap-2">
+                  {commonStocks.map((stock) => (
+                    <button
+                      key={stock.symbol}
+                      type="button"
+                      onClick={() => setSymbol(stock.symbol)}
+                      className="badge-primary hover:bg-blue-200 transition-colors duration-200"
+                    >
+                      {stock.symbol}
+                    </button>
+                  ))}
+                </div>
               </div>
-            ) : (
-              'Analyze Sentiment'
-            )}
-          </button>
-          {error && (
+            </div>
+            <div>
+              <label htmlFor="days" className="block text-sm font-medium text-[#0A2540] mb-2">
+                Analysis Period
+              </label>
+              <select
+                id="days"
+                value={days}
+                onChange={(e) => setDays(e.target.value)}
+                className="select-modern"
+              >
+                <option value="1">Last 24 Hours</option>
+                <option value="3">Last 3 Days</option>
+                <option value="7">Last Week</option>
+                <option value="14">Last 2 Weeks</option>
+                <option value="30">Last Month</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
             <button
-              type="button"
-              onClick={handleRetry}
-              className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors duration-200"
+              type="submit"
+              disabled={loading}
+              className="btn-primary"
             >
-              Try Again
+              {loading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Analyzing Sentiment...
+                </div>
+              ) : (
+                'Analyze Sentiment'
+              )}
             </button>
-          )}
-        </div>
-      </form>
+            {error && (
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="btn-secondary"
+              >
+                Try Again
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+        <div className="card-modern p-6 border-l-4 border-red-500 mb-8">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -160,12 +187,14 @@ export default function SentimentPage() {
             <div className="ml-3">
               <p className="text-sm text-red-700">{error}</p>
               {error.includes('backend server') && (
-                <p className="text-sm text-red-600 mt-2">
-                  Please make sure the backend server is running using the command:
-                  <code className="bg-red-100 px-2 py-1 rounded ml-2">
+                <div className="mt-2 p-3 bg-red-50 rounded-lg">
+                  <p className="text-sm text-red-600 mb-2">
+                    Please start the backend server using:
+                  </p>
+                  <code className="block p-2 bg-red-100 rounded text-red-800 text-xs font-mono">
                     cd backend && uvicorn app.main:app --reload --port 8001
                   </code>
-                </p>
+                </div>
               )}
             </div>
           </div>
@@ -173,35 +202,37 @@ export default function SentimentPage() {
       )}
 
       {analysis && (
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-4">
-              Sentiment Analysis for {analysis.company_name} ({analysis.symbol})
+        <div className="space-y-8 animate-fadeUp">
+          <div className="card-modern p-8">
+            <h2 className="heading-2 mb-6">
+              Market Sentiment: {analysis.company_name} ({analysis.symbol})
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <p className="text-sm text-gray-600">Time Period</p>
-                <p className="text-xl font-semibold">Last {analysis.period_days} days</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="stat-card">
+                <p className="stat-label">Analysis Period</p>
+                <p className="stat-value">Last {analysis.period_days} days</p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">News Articles Found</p>
-                <p className="text-xl font-semibold">{analysis.news_count}</p>
+              <div className="stat-card">
+                <p className="stat-label">Articles Found</p>
+                <p className="stat-value">{analysis.news_count}</p>
+                <p className="text-sm text-[#486284]">news articles</p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Articles Analyzed</p>
-                <p className="text-xl font-semibold">{analysis.analyzed_articles}</p>
+              <div className="stat-card">
+                <p className="stat-label">Articles Analyzed</p>
+                <p className="stat-value">{analysis.analyzed_articles}</p>
+                <p className="text-sm text-[#486284]">in-depth analysis</p>
               </div>
             </div>
           </div>
 
           {analysis.sources.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-4">News Sources</h3>
-              <div className="flex flex-wrap gap-2">
+            <div className="card-modern p-8">
+              <h3 className="heading-3 mb-6">News Sources</h3>
+              <div className="flex flex-wrap gap-3">
                 {analysis.sources.map((source, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                    className="badge-primary px-4 py-2 text-base"
                   >
                     {source}
                   </span>
@@ -210,10 +241,12 @@ export default function SentimentPage() {
             </div>
           )}
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Sentiment Analysis</h3>
+          <div className="card-modern p-8">
+            <h3 className="heading-3 mb-6">Sentiment Analysis</h3>
             <div className="prose max-w-none">
-              <p className="text-gray-700 whitespace-pre-line">{analysis.sentiment_analysis}</p>
+              <p className="text-[#486284] whitespace-pre-line leading-relaxed">
+                {analysis.sentiment_analysis}
+              </p>
             </div>
           </div>
         </div>

@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Financial AI Agent",
-  description: "Your intelligent financial advisor powered by AI",
+  title: "Financial AI | Intelligent Investment Analysis",
+  description: "Advanced AI-powered financial analysis and investment insights",
 };
 
 export default function RootLayout({
@@ -15,20 +15,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <nav className="bg-blue-600 text-white p-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">Financial AI Agent</h1>
-            <div className="space-x-4">
-              <a href="/" className="hover:text-blue-200">Home</a>
-              <a href="/stock-analysis" className="hover:text-blue-200">Stock Analysis</a>
-              <a href="/portfolio" className="hover:text-blue-200">Portfolio</a>
-              <a href="/sentiment" className="hover:text-blue-200">Sentiment</a>
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} h-full antialiased bg-white`}>
+        <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200">
+          <div className="max-w-[1400px] mx-auto">
+            <div className="flex h-16 items-center justify-between px-6 lg:px-8">
+              <div className="flex items-center gap-10">
+                <a href="/" className="text-lg font-semibold text-gray-900">
+                  Financial AI
+                </a>
+                <div className="hidden md:flex items-center gap-6">
+                  <a href="/stock-analysis" 
+                     className="text-[15px] font-medium text-gray-600
+                              hover:text-gray-900 transition-colors duration-200">
+                    Analysis
+                  </a>
+                  <a href="/portfolio" 
+                     className="text-[15px] font-medium text-gray-600
+                              hover:text-gray-900 transition-colors duration-200">
+                    Portfolio
+                  </a>
+                  <a href="/sentiment" 
+                     className="text-[15px] font-medium text-gray-600
+                              hover:text-gray-900 transition-colors duration-200">
+                    Sentiment
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-center gap-6">
+                <a href="/sign-in" 
+                   className="text-[15px] font-medium text-gray-600
+                            hover:text-gray-900 transition-colors duration-200">
+                  Sign In
+                </a>
+                <a href="/get-started" 
+                   className="px-4 py-2 text-[15px] font-medium text-white rounded-full
+                            bg-gray-900 hover:bg-gray-800 transition-all duration-200">
+                  Get Started
+                </a>
+              </div>
             </div>
           </div>
         </nav>
-        <main className="container mx-auto p-4">
+        <main>
           {children}
         </main>
       </body>
